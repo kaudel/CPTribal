@@ -37,6 +37,7 @@ It contains some folders inside of the project:
 - **Data:** Contains the classes and logic for access to the database
 - **DataModels:** Contains the classes used by the database for process the requests processed
 - **Identity:** Contains the entity classes that are used for process the request and the response
+- **Postman:** Contains a file with Postman request for testing the app
 
 When the controller is called, the parameters provided are verified and the type of founding provided is evaluated, depending of the type will be the object class that will be executed
 
