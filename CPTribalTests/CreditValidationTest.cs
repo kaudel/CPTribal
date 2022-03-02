@@ -13,7 +13,7 @@ namespace CPTribalTests
     {
         [TestMethod]
         public void EvaluateCredit_CreditSME_Accepted()
-        {            
+        {
             //Arrange
             CreditParameter creditParam = FillCreditParameter("1", "SME", 1252, 4125, 500);
             BaseCreditLine creditLine = new CreditSME(creditParam);
@@ -27,6 +27,24 @@ namespace CPTribalTests
             Assert.AreEqual(500, result.CreditLine);
             Assert.AreEqual("Credit application accepted", result.Message);
             Assert.AreEqual(HttpStatusCode.Created, result.ReturnCode);
+        }
+
+        [TestMethod]
+        public void EvaluateCredit_CreditSME_Reject()
+        {
+            //Arrange
+            CreditParameter creditParam = FillCreditParameter("1", "SME", 2760, 4125, 2560);
+            BaseCreditLine creditLine = new CreditSME(creditParam);
+            IDbAccess dbAccess = new DbAccess(GenerateContext());
+            CreditValidation creditValidation = new CreditValidation(creditLine, dbAccess);
+
+            //Act
+            ResponseCreditLine result = creditValidation.EvaluateCredit(creditLine);
+
+            //Assert
+            Assert.AreEqual(0, result.CreditLine);
+            Assert.AreEqual("Credit application not accepted", result.Message);
+            Assert.AreEqual(HttpStatusCode.OK, result.ReturnCode);
         }
 
         [TestMethod]
@@ -68,8 +86,8 @@ namespace CPTribalTests
         [TestMethod]
         [DataRow(2760, 4125, 890, 920)] //CashBalance
         [DataRow(2760, 5000, 890, 1000)] //MonthlyRevenue
-        public void EvaluateCredit_CreditStartup_Accepted(double cashbalance, 
-                                                          double monthlyRevenue, 
+        public void EvaluateCredit_CreditStartup_Accepted(double cashbalance,
+                                                          double monthlyRevenue,
                                                           double requestedCreditLine,
                                                           double creditLineResult)
         {
@@ -90,11 +108,11 @@ namespace CPTribalTests
         }
 
         [TestMethod]
-        [DataRow(2760,4125,2300)] // MonthlyRevenue
+        [DataRow(2760, 4125, 2300)] // MonthlyRevenue
         [DataRow(2760, 5000, 2300)] //CashBalance
-        public void EvaluateCredit_CreditStartup_Reject(double cashbalance, 
-                                                        double monthlyRevenue, 
-                                                        double requestedCreditLine )
+        public void EvaluateCredit_CreditStartup_Reject(double cashbalance,
+                                                        double monthlyRevenue,
+                                                        double requestedCreditLine)
         {
             //Arrange
             CreditParameter creditParam = FillCreditParameter("1", "Startup", cashbalance, monthlyRevenue, requestedCreditLine);
@@ -145,7 +163,7 @@ namespace CPTribalTests
             RequestedDate = DateTime.Now
         };
 
-        private ApiContext GenerateContext(bool keepTracking =false)
+        private ApiContext GenerateContext(bool keepTracking = false)
         {
             string DbName = "";
             DbName = Guid.NewGuid().ToString();
